@@ -1,74 +1,41 @@
-'''初始化'''
-import numpy as np
-import matplotlib.pyplot as plt
 import cv2
+import numpy as np
+import sklearn
+from sklearn import datasets
+import sklearn.model_selection
+from sklearn import tree
+import matplotlib.pyplot as plt
 
-'''Sober算子,初始化'''
-sob_x, sob_y = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], \
-               [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
-'''图片读取并灰度化'''
+digits = datasets.load_digits()
+dtree = tree.DecisionTreeClassifier()
+dir(digits)
+data ,feature_names,target = digits.data,digits.feature_names,digits.target
 
-# 类型type(img1_gray)  numpy.ndarray,shape (390, 700)
+xTrain,xTest,yTrain,yTest = sklearn.model_selection.train_test_split(data,target,test_size=0.2,random_state=7)
 
-# plt.imshow(img1_gray, cmap='gray')
-np.random.seed(7)
-img = cv2.imread('figures/tiger.jpg')
-img1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+max_depths = np.arange(1,100,1)
+best_depth_score = []
+for index,data in enumerate(max_depths):
+    dtree = tree.DecisionTreeClassifier(max_depth=data)
+    dtree.fit(xTrain,yTrain)
+    score = dtree.score(xTest,yTest)
+    best_depth_score.append(score)
+
+
+min_samples_leaf  = np.arange(1,100,1)
+best_min_samples_score = []
+for index,data in enumerate(min_samples_leaf):
+    dtree = tree.DecisionTreeClassifier(min_samples_leaf=data)
+    dtree.fit(xTrain,yTrain)
+    score = dtree.score(xTest,yTest)
+    best_min_samples_score.append(score)
+
+
+plt.plot(max_depths,best_min_samples_score,'o')
 plt.show()
-'''定义一个卷积函数'''
-
-
-def convolution(kernal, data_gray):
-    # 没加padding, 最下面两行无法计算 ，故而需要减去2 ，类比于torch.nn 类中的 nn.Conv2d
-    n, m = data_gray.shape  # 返回元组
-    img_new = []
-    for i in range(n - 3):
-        line = []
-        for j in range(m - 3):
-            temp = data_gray[i:i + 3, j:j + 3]
-            line.append(np.sum(np.multiply(kernal, temp)))
-        img_new.append(line)
-    return np.array(img_new)
-
-
-def convolution_ndarray(kernal, data_gray):
-    n, m = data_gray.shape  # (390, 700)
-    img_new = np.zeros((n-2, m-2))
-    for i in range(n-2 ):  # [0,387)
-        temp_row = np.zeros(m-2)  # 700
-        for j in range(m -2):  # [ 0,697)
-            temp = data_gray[i:i + 3, j:j + 3]
-            temp_row[j] = np.sum(np.multiply(kernal, temp))
-        img_new[i] = temp_row
-    return img_new
-
-
-#Gx1 = convolution(sob_x, img1)
-Gx = convolution_ndarray(sob_x, img1)
-
-#Gy1 = convolution(sob_y, img1)
-Gy = convolution_ndarray(sob_y, img1)
-
-G_L1 = np.absolute(Gx) +np.absolute(Gy)
-# L2范数
-G_L2 = np.sqrt(pow(Gx,2)+pow(Gy,2))
-
-# 255矩阵
-ones = np.ones(G_L1.shape)*255 #ones.shape (387, 697)
-
-
-plt.figure(figsize=(40,40))
-plt.subplot(131)
-plt.imshow(img1, cmap='gray')
-plt.title('Sober + row_data ')
-
-Color_Reversal_1 = ones -G_L1 #颜色反转
-plt.subplot(132)
-plt.imshow(Color_Reversal_1,cmap='gray')
-plt.title(' Sober + G_L1')
-
-Color_Reversal_2 = ones-G_L2    #颜色反转
-plt.subplot(133)
-plt.imshow(Color_Reversal_2,cmap='gray')
-plt.title(' Sober +G_L2 ')
+plt.plot(max_depths,best_depth_score,'o')
 plt.show()
+
+# best_dtree = tree.DecisionTreeClassifier(min_samples_leaf = min_samples_leaf[0],max_depth= max_depths[0])
+# best_dtree.fit(xTrain,yTrain)
+# print(best_dtree.score(xTest,yTest))
