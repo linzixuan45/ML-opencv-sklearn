@@ -1,0 +1,24 @@
+digraph Tree {
+node [shape=box] ;
+0 [label="worst area <= 884.55\ngini = 0.466\nsamples = 512\nvalue = [189, 323]\nclass = benign"] ;
+1 [label="worst concave points <= 0.136\ngini = 0.158\nsamples = 346\nvalue = [30, 316]\nclass = benign"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="mean texture <= 21.435\ngini = 0.039\nsamples = 303\nvalue = [6, 297]\nclass = benign"] ;
+1 -> 2 ;
+3 [label="worst symmetry <= 0.23\ngini = 0.008\nsamples = 248\nvalue = [1, 247]\nclass = benign"] ;
+2 -> 3 ;
+4 [label="gini = 0.049\nsamples = 40\nvalue = [1, 39]\nclass = benign"] ;
+3 -> 4 ;
+5 [label="gini = 0.0\nsamples = 208\nvalue = [0, 208]\nclass = benign"] ;
+3 -> 5 ;
+6 [label="gini = 0.165\nsamples = 55\nvalue = [5, 50]\nclass = benign"] ;
+2 -> 6 ;
+7 [label="gini = 0.493\nsamples = 43\nvalue = [24, 19]\nclass = malignant"] ;
+1 -> 7 ;
+8 [label="worst concave points <= 0.153\ngini = 0.081\nsamples = 166\nvalue = [159, 7]\nclass = malignant"] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+9 [label="gini = 0.289\nsamples = 40\nvalue = [33, 7]\nclass = malignant"] ;
+8 -> 9 ;
+10 [label="gini = 0.0\nsamples = 126\nvalue = [126, 0]\nclass = malignant"] ;
+8 -> 10 ;
+}
